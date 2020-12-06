@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: Install Zola
+        run: |
+          set -e
+          curl -s -L https://github.com/getzola/zola/releases/download/v0.12.2/zola-v0.12.2-x86_64-unknown-linux-gnu.tar.gz -o zola.tar.gz
+          echo "572e34c4c2b874f9704fb8512abea84532623f7567996bac456291a21c1b2595  zola.tar.gz" | sha256sum -c
+          sudo tar xvzf zola.tar.gz -C /usr/local/bin
+          rm zola.tar.gz
+          
+      - name: Build static website
+        run: |
+          mkdir -p /tmp/workspace
+          zola build -o /tmp/workspace/public
+
+      - name: Archive static website
+        uses: actions/upload-artifact@v2
+        with:
+          name: static-website
+          path: /tmp/workspace/public
+  publish:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Download static website archive
+        uses: actions/download-artifact@v2
+        with:
+          name: static-website
+      - name: Upload website to S3
+        run: |
+          aws s3 sync --delete --acl public-read /tmp/workspace/public/ "s3://${{ secrets.AWS_BUCKET_NAME }}/"
+        env:
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
