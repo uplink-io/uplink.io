@@ -11,4 +11,7 @@ highlight_code = false
 # Whether to build a search index to be used later on by a JavaScript library
 build_search_index = false
 
+# Minify the HTML
+minify_html = true
+
 [extra]
