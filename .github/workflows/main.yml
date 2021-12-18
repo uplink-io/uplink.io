@@ -17,8 +17,8 @@ jobs:
       - name: Install Zola
         run: |
           set -e
-          curl -s -L https://github.com/getzola/zola/releases/download/v0.12.2/zola-v0.12.2-x86_64-unknown-linux-gnu.tar.gz -o zola.tar.gz
-          echo "572e34c4c2b874f9704fb8512abea84532623f7567996bac456291a21c1b2595  zola.tar.gz" | sha256sum -c
+          curl -s -L https://github.com/getzola/zola/releases/download/v0.15.2/zola-v0.15.2-x86_64-unknown-linux-gnu.tar.gz -o zola.tar.gz
+          echo "d067e8261f0a9121ea0388616f74fcba4b1ed87df8ea78ca20a577424c15fa20  zola.tar.gz" | sha256sum -c
           sudo tar xvzf zola.tar.gz -C /usr/local/bin
           rm zola.tar.gz
           
